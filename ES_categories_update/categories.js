@@ -102,6 +102,9 @@ let check = async (appid) => {
             { match: { appid: appid } },
             { exists: { field: "review_score_desc" } },
           ],
+          must_not: [
+            { exists: { field: "categories" } },
+          ]
         }
       }
     }
