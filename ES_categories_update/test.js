@@ -18,6 +18,7 @@ let updateWithES = async () => {
         }
       }
     })
+    console.log(list.hits)
     console.log(list.hits.total["value"] ? list.hits.hits[0]._id : false)
     // const id = list.hits.hits[0]._id
     // const result = await client.update({

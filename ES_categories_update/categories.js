@@ -109,7 +109,12 @@ let check = async (appid) => {
       }
     }
   })
-  return list.hits.total["value"] ? { id: list.hits.hits[0]._id, name: list.hits.hits[0]._source.name } : false;
+  if (list.hits.total["value"]) {
+    return { id: list.hits.hits[0]._id, name: list.hits.hits[0]._source.name }
+  } else {
+    console.log('통과')
+    return false;
+  }
 };
 
 
