@@ -27,7 +27,7 @@ async function work(n, index) {
   console.log("index : " + index + "/ name : " + name + "/ id " + id);
   await setTimeoutPromise(5000);
   await axios
-    .get(`https://store.steampowered.com/api/appdetails?appids=${n}`, {
+    .get(`https://store.steampowered.com/api/appdetails?appids=${n}&l=koreana`, {
       contentType: "utf-8",
     }, {
       baseURL: `https://store.steampowered.com/`,
@@ -102,9 +102,9 @@ let check = async (appid) => {
             { match: { appid: appid } },
             { exists: { field: "review_score_desc" } },
           ],
-          must_not: [
-            { exists: { field: "categories" } },
-          ]
+          // must_not: [
+          //   { exists: { field: "categories" } },
+          // ]
         }
       }
     }
