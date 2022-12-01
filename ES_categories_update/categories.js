@@ -27,7 +27,7 @@ async function work(n, index) {
   console.log("index : " + index + "/ name : " + name + "/ id " + id);
   await setTimeoutPromise(5000);
   await axios
-    .get(`https://store.steampowered.com/api/appdetails?appids=${n}&l=koreana`, {
+    .get(`https://store.steampowered.com/api/appdetails?appids=${n}&l=english`, {
       contentType: "utf-8",
     }, {
       baseURL: `https://store.steampowered.com/`,
@@ -47,11 +47,7 @@ async function work(n, index) {
             id: id,
             body: {
               doc: {
-                type: res[n].data.type,
                 short_description: res[n].data.short_description,
-                categories: res[n].data.categories,
-                supported_languages: res[n].data.supported_languages,
-                metacritic: res[n].data.metacritic,
               }
             }
           });
