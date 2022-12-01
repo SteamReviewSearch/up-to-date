@@ -47,10 +47,21 @@ async function work(n, index) {
             id: id,
             body: {
               doc: {
-                short_description: res[n].data.short_description,
+                short_description_eng: res[n].data.short_description,
               }
             }
           });
+          if (res[n].data.genres) {
+            await client.update({
+              index: "game_data",
+              id: id,
+              body: {
+                doc: {
+                  genres: res[n].data.genres,
+                }
+              }
+            });
+          }
         } else {
           return false;
         }
