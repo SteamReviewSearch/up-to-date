@@ -27,7 +27,7 @@ async function work(n, index) {
   console.log("index : " + index + "/ name : " + name + "/ id " + id);
   await setTimeoutPromise(5000);
   await axios
-    .get(`https://store.steampowered.com/api/appdetails?appids=1451830&l=english`, {
+    .get(`https://store.steampowered.com/api/appdetails?appids=${n}&l=english`, {
       contentType: "utf-8",
     }, {
       baseURL: `https://store.steampowered.com/`,
@@ -40,10 +40,11 @@ async function work(n, index) {
       // 반환값이 null도 아니고 string '' 인 경우가 있음
       if (response.data !== '' || null) {
         const res = response.data;
+        // console.log(res)
         if (res[n].success) {
           // url만 뽑아서 Games에 저장 
           await client.update({
-            index: "game_data",
+            index: "games_data",
             id: id,
             body: {
               doc: {
@@ -91,17 +92,14 @@ let finAllList = async (offset, start) => {
 };
 let check = async (appid) => {
   const list = await client.search({
-    index: "game_data",
+    index: "games_data",
     body: {
       query: {
         bool: {
           must: [
             { match: { appid: appid } },
-            { exists: { field: "review_score_desc" } },
+            { exists: { field: "img_url" } },
           ],
-          // must_not: [
-          //   { exists: { field: "categories" } },
-          // ]
         }
       }
     }
