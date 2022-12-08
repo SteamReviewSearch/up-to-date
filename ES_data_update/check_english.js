@@ -15,7 +15,7 @@ function setTimeoutPromise(ms) {
 }
 async function work(n, index) {
   //반복문을 동기처리 및 실패시 재접속을 위한 함수화
-  console.log("index : " + index, "appid:" + n);
+  console.log("index : " + index, "appid: " + n);
 
   //n:appid
   await setTimeoutPromise(1000);
@@ -59,7 +59,6 @@ async function work(n, index) {
                     id: j.recommendationid,
                     body: {
                       // params: { retry_on_conflict: 6 },
-                      doc: {
                         appid: n,
                         recommendationid: j.recommendationid,
                         steamid: j.author.steamid,
@@ -71,7 +70,6 @@ async function work(n, index) {
                         votes_up: j.votes_up,
                         votes_funny: j.votes_funny,
                         weighted_vote_score: j.weighted_vote_score,
-                      },
                     },
                   });
                   console.log("생성", j.recommendationid);
