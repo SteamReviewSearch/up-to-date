@@ -1,44 +1,48 @@
-// const client = require("../ELK_connection");
+const client = require("../ELK_connection");
+const Worker = require("worker_threads");
+// {
+//   count: 150548,
+//   _shards: { total: 1, successful: 1, skipped: 0, failed: 0 }
+// }
+// count.count === 150548
+console.log(0, Math.floor((150548 * 1) / 10), Math.floor((150548 * 2) / 10));
 
-// 이를 사용해서 업데이트 할 수 있다.
-// 필드명이 없다면 생성하고 이미 있다면 업데이트 해주기 때문에 아무걱정없이 그냥 insert하면 되시겠다.
+// 0 50182 100365
+// 150548
+// let updateWithES = async () => {
+//   try {
+//     let num = Worker.threadId;
+//     const count = await client.count({ index: "games_data" });
 
-let updateWithES = async () => {
-  try {
-    // const list = await client.search({
-    //   index: "game_data",
-    //   body: {
-    //     query: {
-    //       bool: {
-    //         must: [
-    //           { match: { appid: 1523 } },
-    //           { exists: { field: "review_score_desc" } },
-    //         ],
-    //       },
-    //     },
-    //   },
-    // });
-    // console.log(list.hits);
-    // console.log(list.hits.total["value"] ? list.hits.hits[0]._id : false);
-    const offset = 3;
-    for (i = offset - 2; i < offset; i++) {
-      console.log(i);
-    }
-    // const id = list.hits.hits[0]._id
-    // const result = await client.update({
-    //   index: "game_data",
-    //   id: id,
-    //   body: {
-    //     doc: {
-    //       "new": "안 안녕한데요??"
-    //     }
-    //   }
-    // });
-    // console.log(result)
-    return;
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     const work_start = Math.floor((count.count * (num - 1)) / 3);
+//     const work_end = Math.floor((count.count * num) / 3) - 1;
 
-updateWithES();
+//     console.log(`시작 ${work_start} / 끝 ${work_end}}`);
+
+//     // console.log(`0 ~ ${Math.floor((count.count * 1) / 3) - 1}`);
+//     // console.log(
+//     //   `${Math.floor((count.count * 1) / 3)} ~
+//     //   ${Math.floor((count.count * 2) / 3) - 1}`
+//     // );
+//     // console.log(`${Math.floor((count.count * 2) / 3)} ~ ${count.count}`);
+//     // 0 ~ NaN
+//     // NaN ~ NaN
+//     // NaN ~ [object Object]
+//     // 0 ~ 50181
+//     // 50182 ~ 100364
+//     // 100365 ~ 150548
+//     return;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// updateWithES();
+
+// for (
+//   let i = (offset - 1) * 50000 + start;
+//   i < (offset - 1) * 50000 + start + 50000;
+//   i++ //최대치를 넘어가지 못하게 수정
+// ) {
+//   console.log(i);
+// }
