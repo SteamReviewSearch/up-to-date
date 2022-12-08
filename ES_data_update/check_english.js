@@ -39,23 +39,26 @@ async function work(n, index) {
         if (!response?.body?.slice(0, 6).includes("<")) {
           //access deined발생시 axios에러를 뱉어서 여기까지 안옴
           //response.body는 undefind로 나옴
-          const res = response;
-          console.log(res.reviews);
+          const res = response.data;
+
+          // console.log(res.query_summary, n, "query summary");
           if (res.success) {
             //response.data는 jsonparse필요없음
             if (res.query_summary?.num_reviews === 0) {
+              // console.log(res.query_summary.num_reviews, n);
               return;
             } else {
+              // console.log(res.reviews, "reviews");
               for (let j of res.reviews) {
                 const reuslt_check = await check(j.recommendationid);
                 if (!reuslt_check) {
                   // false === 중복이 없는 경우 생성
                   await client.index({
                     index: "review_data",
-                    refresh: wait_for,
+                    refresh: true,
                     id: j.recommendationid,
                     body: {
-                      params: { retry_on_conflict: 6 },
+                      // params: { retry_on_conflict: 6 },
                       doc: {
                         appid: n,
                         recommendationid: j.recommendationid,
@@ -71,15 +74,15 @@ async function work(n, index) {
                       },
                     },
                   });
-                  console.log("생성");
+                  console.log("생성", j.recommendationid);
                 } else {
                   // object === 중복 있는 경우 수정
                   await client.update({
                     index: "review_data",
-                    refresh: wait_for,
+                    refresh: true,
                     id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
                     body: {
-                      params: { retry_on_conflict: 6 },
+                      // params: { retry_on_conflict: 6 },
                       doc: {
                         appid: n,
                         recommendationid: j.recommendationid,
@@ -95,26 +98,27 @@ async function work(n, index) {
                       },
                     },
                   });
-                  console.log("업데이트");
+                  console.log("업데이트", j.recommendationid);
                 }
-                // 업데이트 유무 상관없이 크롤링한 평가 정보 games_data 에 업데이트
-                await client.update({
-                  index: "games_data",
-                  refresh: wait_for,
-                  id: n,
-                  body: {
-                    params: { retry_on_conflict: 6 },
-                    doc: {
-                      num_reviews: query_summary.j.num_reviews,
-                      review_score: query_summary.j.review_score,
-                      review_score_desc: query_summary.j.review_score_desc,
-                      total_positive: query_summary.j.total_positive,
-                      total_negative: query_summary.j.total_negative,
-                      total_reviews: query_summary.j.total_reviews,
-                    },
-                  },
-                });
               }
+              // 업데이트 유무 상관없이 크롤링한 평가 정보 games_data 에 업데이트
+              await client.update({
+                index: "games_data",
+                refresh: true,
+                id: n,
+                body: {
+                  // params: { retry_on_conflict: 6 },
+                  doc: {
+                    num_reviews: res.query_summary.num_reviews,
+                    review_score: res.query_summary.review_score,
+                    review_score_desc: res.query_summary.review_score_desc,
+                    total_positive: res.query_summary.total_positive,
+                    total_negative: res.query_summary.total_negative,
+                    total_reviews: res.query_summary.total_reviews,
+                  },
+                },
+              });
+              console.log("games_data 업뎃");
             }
           }
         }
@@ -144,20 +148,21 @@ let finAllList = async (num) => {
   // 갯수세는 것 뿐
   const count = await client.count({ index: "games_data" });
 
-  const work_start = Math.floor((count.count * (num - 1)) / 4);
-  const work_end = Math.floor((count.count * num) / 4) - 1;
+  const work_start = Math.floor((count.count * (num - 1)) / 3);
+  const work_end = Math.floor((count.count * num) / 3) - 1;
   console.log(`일꾼 ${num}번 시작 ${work_start} ~ 끝 ${work_end}}`);
-  // 시작 0 / 끝 50181}
-  // 시작 50182 / 끝 100364}
-  // 시작 100365 / 끝 150547}
+  // 시작 0 / 끝 50181} num1
+  // 시작 50182 / 끝 100364} num2
+  // 시작 100365 / 끝 150547} num3
+  let from = 6 * (num - 1);
   let term = Math.floor((work_end - work_start) / 6) - 1; //from과 size의 합이 10000이 넘으면 안된다고 해서
   console.log(term);
   let list = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = from; i < from + 6; i++) {
     //게임 리스트
     let appids = await client.search({
-      index: "games_data",
-      from: i,
+      index: "game_data",
+      from: i, //모든 스레드
       size: term,
       _source: ["appid"],
     });
