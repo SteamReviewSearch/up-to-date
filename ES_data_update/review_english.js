@@ -4,6 +4,7 @@ var request = require("sync-request");
 const client = require("../ELK_connection");
 const https = require("https");
 const axios = require("axios");
+const {updateErrorESLog}=require("../Log/logger")
 // const { Reviews, Games } = require("./models");
 const { nextTick } = require("process");
 //데이터베이스 접속 변수
@@ -124,6 +125,8 @@ async function work(n, index) {
     })
     .catch(async (error) => {
       console.log("멈춤 => " + error);
+      console.log(error.stack)
+      updateErrorESLog.error({ label: error.name, message:  error.stack || 'null' })
       await setTimeoutPromise(6000);
       await work(n, index);
     });
