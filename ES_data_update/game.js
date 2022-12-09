@@ -5,11 +5,6 @@ const https = require("https");
 var request = require("sync-request");
 const { Op } = require("sequelize");
 const { Games, Reviews, Metascores } = require("../models");
-
-//-- SELECT * FROM `steam_datas`.`Reviews` Order by appid asc LIMIT 1000;
-// SELECT DATE_FORMAT(createdAt, '%Y%m%d') AS date, count(*) AS cnt
-// FROM `steam_datas`.`Reviews`
-// GROUP BY DATE_FORMAT(createdAt, '%Y%m%d') ORDER BY date DESC;
 const axios = require("axios");
 const { response } = require("express");
 const { nextTick } = require("process");
@@ -54,14 +49,14 @@ async function work(n, index) {
           const result = res[n].data;
           const exist = await check(n);
           if (!exist) {
-            // url만 뽑아서 Games에 저장
-            await client.index({
-              index: "t_gamedata",
-              id: n,
-              refresh: true,
-              body: {
-                params: { retry_on_conflict: 6 },
-                doc: {
+            if (result.metacritic) {
+              // url만 뽑아서 Games에 저장
+              await client.index({
+                index: "games_data_copy",
+                id: n,
+                refresh: true,
+                body: {
+                  params: { retry_on_conflict: 6 },
                   genre: result.genre,
                   review_score: result.review_score,
                   name: result.name,
@@ -79,27 +74,28 @@ async function work(n, index) {
                   genres: result.genres,
                   release_date: result.release_date,
                   platforms: result.platforms,
+                  metacritic: result.metacritic,
+                  price_overview: result.price_overview,
+                  pass: true,
                 },
-              },
-            });
-            console.log("================================", n);
-          } else {
-            await client.update({
-              index: "t_gamedata",
-              refresh: true,
-              id: exist, //이거 뭔뜻?
-              body: {
-                params: { retry_on_conflict: 6 },
-                doc: {
+              });
+              console.log("생성", n);
+            } else {
+              await client.index({
+                index: "games_data_copy",
+                id: n,
+                refresh: true,
+                body: {
+                  params: { retry_on_conflict: 6 },
+                  genre: result.genre,
                   review_score: result.review_score,
                   name: result.name,
-                  version: result.version,
+                  genreid: result.genreid,
                   total_positive: result.total_positive,
                   img_url: result.img_url,
                   review_score_desc: result.review_score_desc,
                   total_positive: result.total_positive,
-                  appid: result.appid,
-                  timestamp: result.timestamp,
+                  appid: n,
                   short_description: result.short_description,
                   supported_language: result.supported_language,
                   categories: result.categories,
@@ -109,38 +105,105 @@ async function work(n, index) {
                   release_date: result.release_date,
                   platforms: result.platforms,
                   price_overview: result.price_overview,
+                  pass: true,
                 },
-              },
-            });
+              });
+              console.log("생성", n);
+            }
+          } else {
+            if (result.metacritic) {
+              await client.update({
+                index: "games_data_copy",
+                refresh: true,
+                id: exist._id, //이거 뭔뜻?
+                body: {
+                  doc: {
+                    params: { retry_on_conflict: 6 },
+                    review_score: result.review_score,
+                    name: result.name,
+                    version: result.version,
+                    total_positive: result.total_positive,
+                    img_url: result.img_url,
+                    review_score_desc: result.review_score_desc,
+                    total_positive: result.total_positive,
+                    appid: result.appid,
+                    timestamp: result.timestamp,
+                    short_description: result.short_description,
+                    supported_language: result.supported_language,
+                    categories: result.categories,
+                    type: result.type,
+                    short_description_eng: result.short_description_eng,
+                    genres: result.genres,
+                    release_date: result.release_date,
+                    platforms: result.platforms,
+                    metacritic: result.metacritic,
+                    price_overview: result.price_overview,
+                    pass: true,
+                  },
+                },
+              });
+              console.log("업뎃", n);
+            } else {
+              await client.update({
+                index: "games_data_copy",
+                refresh: true,
+                id: exist._id, //이거 뭔뜻?
+                body: {
+                  doc: {
+                    params: { retry_on_conflict: 6 },
+                    review_score: result.review_score,
+                    name: result.name,
+                    version: result.version,
+                    total_positive: result.total_positive,
+                    img_url: result.img_url,
+                    review_score_desc: result.review_score_desc,
+                    total_positive: result.total_positive,
+                    appid: result.appid,
+                    timestamp: result.timestamp,
+                    short_description: result.short_description,
+                    supported_language: result.supported_language,
+                    categories: result.categories,
+                    type: result.type,
+                    short_description_eng: result.short_description_eng,
+                    genres: result.genres,
+                    release_date: result.release_date,
+                    platforms: result.platforms,
+                    price_overview: result.price_overview,
+                    pass: true,
+                  },
+                },
+              });
+              console.log("업뎃", n);
+            }
           }
         } else {
           const { exist } = await check(n);
           if (exist) {
             await client.update({
-              index: "t_gamedata",
+              index: "games_data_copy",
               refresh: true,
               id: exist,
               body: {
-                params: { retry_on_conflict: 6 },
                 doc: {
+                  params: { retry_on_conflict: 6 },
                   appid: n,
                   pass: false,
                 },
               },
             });
+            console.log("pass false 업뎃", n);
           } else {
             await client.index({
-              index: "t_gamedata",
+              index: "games_data_copy",
               refresh: true,
               id: n,
               body: {
                 params: { retry_on_conflict: 6 },
-                doc: {
-                  appid: n,
-                  pass: false,
-                },
+                appid: n,
+                pass: false,
               },
             });
+            console.log("pass false 생성", n);
           }
         }
       }
@@ -201,7 +264,7 @@ let finAllList = async (offset, start) => {
 
 let check = async (appid) => {
   const list = await client.search({
-    index: "t_gamedata",
+    index: "games_data_copy",
     body: {
       query: {
         bool: {
@@ -212,7 +275,7 @@ let check = async (appid) => {
   });
   if (list.hits.hits.length) {
     console.log("!통과", list.hits.hits[0]._source.appid);
-    return list.hits.hits[0]._source.appid;
+    return list.hits.hits[0];
   } else {
     console.log("통과", appid);
     return false;
@@ -220,10 +283,3 @@ let check = async (appid) => {
 };
 
 test();
-
-// let t =async()=>{
-//   let i =await existReview(1457540,'76561198040580543',1624621783);
-//   console.log(i)
-// }
-// t();
-//실행

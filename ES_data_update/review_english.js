@@ -15,7 +15,7 @@ function setTimeoutPromise(ms) {
 }
 async function work(n, index) {
   //반복문을 동기처리 및 실패시 재접속을 위한 함수화
-  console.log("index : " + index, "appid:" + n);
+  console.log("index : " + index, "appid: " + n);
 
   //n:appid
   await setTimeoutPromise(1000);
@@ -59,47 +59,45 @@ async function work(n, index) {
                     id: j.recommendationid,
                     body: {
                       // params: { retry_on_conflict: 6 },
-                      doc: {
-                        appid: n,
-                        recommendationid: j.recommendationid,
-                        steamid: j.author.steamid,
-                        playtime_at_review: j.author.playtime_at_review,
-                        language: j.language,
-                        review: j.review,
-                        timestamp_updated: j.timestamp_created,
-                        voted_up: j.voted_up,
-                        votes_up: j.votes_up,
-                        votes_funny: j.votes_funny,
-                        weighted_vote_score: j.weighted_vote_score,
-                      },
+                      appid: n,
+                      recommendationid: j.recommendationid,
+                      steamid: j.author.steamid,
+                      playtime_at_review: j.author.playtime_at_review,
+                      language: j.language,
+                      review: j.review,
+                      timestamp_updated: j.timestamp_created,
+                      voted_up: j.voted_up,
+                      votes_up: j.votes_up,
+                      votes_funny: j.votes_funny,
+                      weighted_vote_score: j.weighted_vote_score,
                     },
                   });
                   console.log("생성", j.recommendationid);
                 } else {
                   // object === 중복 있는 경우 수정
-                  await client.update({
-                    index: "review_data",
-                    refresh: true,
-                    id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
-                    body: {
-                      // params: { retry_on_conflict: 6 },
-                      doc: {
-                        appid: n,
-                        recommendationid: j.recommendationid,
-                        steamid: j.author.steamid,
-                        playtime_at_review: j.author.playtime_at_review,
-                        language: j.language,
-                        review: j.review,
-                        timestamp_updated: j.timestamp_created,
-                        voted_up: j.voted_up,
-                        votes_up: j.votes_up,
-                        votes_funny: j.votes_funny,
-                        weighted_vote_score: j.weighted_vote_score,
-                      },
-                    },
-                  });
-                  console.log("업데이트", j.recommendationid);
-                }
+                  // await client.update({
+                  //   index: "review_data",
+                  //   refresh: true,
+                  //   id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
+                  //   body: {
+                  //     // params: { retry_on_conflict: 6 },
+                  //     doc: {
+                  //       appid: n,
+                  //       recommendationid: j.recommendationid,
+                  //       steamid: j.author.steamid,
+                  //       playtime_at_review: j.author.playtime_at_review,
+                  //       language: j.language,
+                  //       review: j.review,
+                  //       timestamp_updated: j.timestamp_created,
+                  //       voted_up: j.voted_up,
+                  //       votes_up: j.votes_up,
+                  //       votes_funny: j.votes_funny,
+                  //       weighted_vote_score: j.weighted_vote_score,
+                  //     },
+                  //   },
+                  // });
+                  // console.log("업데이트", j.recommendationid);
+                } //일단 주석 다큐먼트아이디가 다 recommendationid가될때 풀듯 check부분도 수정필요
               }
               // 업데이트 유무 상관없이 크롤링한 평가 정보 games_data 에 업데이트
               await client.update({
@@ -165,6 +163,13 @@ let finAllList = async (num) => {
       from: i, //모든 스레드
       size: term,
       _source: ["appid"],
+      body: {
+        query: {
+          bool: {
+            must_not: [{ match: { pass: false } }],
+          },
+        },
+      },
     });
     const hits = appids.hits.hits;
     for (let j = 0; j < hits.length; j++) {
@@ -189,34 +194,13 @@ let check = async (recommendationid) => {
       },
     },
   });
-  if (!list.hits.hits.length) {
-    return false;
-  } else {
-    return list.hits.hits[0];
+  if (list.hits.hits.length) {
+    await client.delete({
+      index: "review_data",
+      id: list.hits.hits[0].fingerprint,
+    });
   }
+  return false;
 };
 
-// let checkReview = async (appid) => {
-//   let list = await Reviews.findOne({
-//     where: {
-//       appid,
-//       language: "english",
-//     },
-//     raw: true,
-//   });
-//   return list !== null;
-// };
-
-// let existReview = async (appid, steamid, timestamp_updated) => {
-//   let list = await Reviews.findOne({
-//     where: {
-//       appid,
-//       steamid,
-//       timestamp_updated,
-//       language: "english",
-//     },
-//     raw: true,
-//   });
-//   return list !== null;
-// };
 test();
