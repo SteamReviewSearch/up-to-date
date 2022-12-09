@@ -53,7 +53,7 @@ async function work(n, index) {
                 const reuslt_check = await check(j.recommendationid);
                 if (!reuslt_check) {
                   // false === 중복이 없는 경우 생성
-                  await client.index({
+                  let create=await client.index({
                     index: "review_data",
                     refresh: true,
                     id: j.recommendationid,
@@ -72,10 +72,11 @@ async function work(n, index) {
                         weighted_vote_score: j.weighted_vote_score,
                     },
                   });
+                  console.log(create)
                   console.log("생성", j.recommendationid);
                 } else {
                   // object === 중복 있는 경우 수정
-                  await client.update({
+                  let update=await client.update({
                     index: "review_data",
                     refresh: true,
                     id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
@@ -96,6 +97,7 @@ async function work(n, index) {
                       },
                     },
                   });
+                  console.log(update)
                   console.log("업데이트", j.recommendationid);
                 }
               }
