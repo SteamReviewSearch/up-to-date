@@ -15,7 +15,7 @@ function setTimeoutPromise(ms) {
 }
 async function work(n, index) {
   //반복문을 동기처리 및 실패시 재접속을 위한 함수화
-  console.log("index : " + index, "appid: " + n);
+  console.log("r.kor", "index : " + index, "appid: " + n);
 
   //n:appid
   await setTimeoutPromise(1000);
@@ -54,7 +54,7 @@ async function work(n, index) {
                 if (!reuslt_check) {
                   // false === 중복이 없는 경우 생성
                   await client.index({
-                    index: "review_data",
+                    index: "reviews_datas",
                     refresh: true,
                     id: j.recommendationid,
                     body: {
@@ -76,7 +76,7 @@ async function work(n, index) {
                 } else {
                   // object === 중복 있는 경우 수정
                   // await client.update({
-                  //   index: "review_data",
+                  //   index: "reviews_datas",
                   //   refresh: true,
                   //   id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
                   //   body: {
@@ -101,7 +101,7 @@ async function work(n, index) {
               }
               // 업데이트 유무 상관없이 크롤링한 평가 정보 games_data 에 업데이트
               await client.update({
-                index: "games_data",
+                index: "games_data_copy",
                 refresh: true,
                 id: n,
                 body: {
@@ -144,7 +144,7 @@ test = async () => {
 };
 let finAllList = async (num) => {
   // 갯수세는 것 뿐
-  const count = await client.count({ index: "games_data" });
+  const count = await client.count({ index: "games_data_copy" });
 
   const work_start = Math.floor((count.count * (num - 1)) / 3);
   const work_end = Math.floor((count.count * num) / 3) - 1;
@@ -159,7 +159,7 @@ let finAllList = async (num) => {
   for (let i = from; i < from + 6; i++) {
     //게임 리스트
     let appids = await client.search({
-      index: "game_data",
+      index: "games_data_copy",
       from: i, //모든 스레드
       size: term,
       _source: ["appid"],
@@ -185,7 +185,7 @@ let finAllList = async (num) => {
 // 리뷰 중복체크
 let check = async (recommendationid) => {
   const list = await client.search({
-    index: "review_data",
+    index: "reviews_datas",
     body: {
       query: {
         bool: {
@@ -196,9 +196,10 @@ let check = async (recommendationid) => {
   });
   if (list.hits.hits.length) {
     await client.delete({
-      index: "review_data",
-      id: list.hits.hits[0].fingerprint,
+      index: "reviews_datas",
+      id: list.hits.hits[0]._id,
     });
+    console.log(list.hits.hits[0]._id, "삭제염");
   }
   return false;
 };
