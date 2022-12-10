@@ -235,7 +235,7 @@ ${num_art}| [${n}]`);
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 600) // 1분에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
