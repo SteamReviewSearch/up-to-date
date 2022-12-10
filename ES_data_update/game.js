@@ -3,23 +3,25 @@ const Worker = require("worker_threads");
 var _ = require("lodash");
 const https = require("https");
 var request = require("sync-request");
-const { Op } = require("sequelize");
-const { Games, Reviews, Metascores } = require("../models");
 const axios = require("axios");
-const { response } = require("express");
-const { nextTick } = require("process");
-const { type } = require("os");
 //데이터베이스 접속 변수
 //작동코드
+
+const EngReview = require('./review_english')
+const KorReview = require('./review_kor')
+
+const eng = new EngReview()
+const kor = new KorReview()
+
 function setTimeoutPromise(ms) {
   return new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });
 }
-async function work(n, index) {
+
+async function work(n, index, worker) {
   //반복문을 동기처리 및 실패시 재접속을 위한 함수화
   //n:appid
-  console.log("index : " + index + "/ appid " + n);
   await setTimeoutPromise(15000);
   await axios
     .get(
@@ -40,7 +42,6 @@ async function work(n, index) {
       // 반환값이 null도 아니고 string '' 인 경우가 있음
       if (response.data !== "" || null || undefined) {
         const res = response.data;
-        // console.log(res)
         if (
           res[n].success &&
           res[n].data.img_url !== null &&
@@ -79,7 +80,9 @@ async function work(n, index) {
                   pass: true,
                 },
               });
-              console.log("생성", n);
+              await eng.work(n, index, worker)
+              await kor.work(n, index, worker)
+
             } else {
               await client.index({
                 index: "games_data_copy",
@@ -108,7 +111,9 @@ async function work(n, index) {
                   pass: true,
                 },
               });
-              console.log("생성", n);
+              await eng.work(n, index, worker)
+              await kor.work(n, index, worker)
+
             }
           } else {
             if (result.metacritic) {
@@ -142,7 +147,9 @@ async function work(n, index) {
                   },
                 },
               });
-              console.log("업뎃", n);
+              await eng.work(n, index, worker)
+              await kor.work(n, index, worker)
+
             } else {
               await client.update({
                 index: "games_data_copy",
@@ -173,7 +180,9 @@ async function work(n, index) {
                   },
                 },
               });
-              console.log("업뎃", n);
+              await eng.work(n, index, worker)
+              await kor.work(n, index, worker)
+
             }
           }
         } else {
@@ -191,7 +200,7 @@ async function work(n, index) {
                 },
               },
             });
-            console.log("pass false 업뎃", n);
+            console.log("Worker " + worker + "of game - " + n + "번 패스");
           } else {
             await client.index({
               index: "games_data_copy",
@@ -203,7 +212,7 @@ async function work(n, index) {
                 pass: false,
               },
             });
-            console.log("pass false 생성", n);
+            console.log("Worker " + worker + "of game - " + n + "번 패스");
           }
         }
       }
@@ -221,6 +230,7 @@ async function work(n, index) {
 test = async () => {
   let num = Worker.threadId;
   let start = 0;
+  console.log(num + " worker - 스타또")
   let list = await finAllList(num, start);
   //game테이블에서 리스트 구합니다.
   //배열을 2개씩 나눕니다.
@@ -229,7 +239,9 @@ test = async () => {
     //두개씩있는 배열 반복
     let n = i;
     index++;
-    const result = await work(n, index);
+
+    console.log(`Worker ${num} of game - ${index} 싸이클 시작`);
+    const result = await work(n, index, num);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
   }
@@ -274,10 +286,8 @@ let check = async (appid) => {
     },
   });
   if (list.hits.hits.length) {
-    console.log("!통과", list.hits.hits[0]._source.appid);
     return list.hits.hits[0];
   } else {
-    console.log("통과", appid);
     return false;
   }
 };
