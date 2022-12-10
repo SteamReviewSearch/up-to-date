@@ -53,7 +53,7 @@ async function work(n, index, worker) {
             if (result.metacritic) {
               // url만 뽑아서 Games에 저장
               await client.index({
-                index: "games_data_copy",
+                index: "games_data",
                 id: n,
                 refresh: true,
                 body: {
@@ -79,7 +79,7 @@ async function work(n, index, worker) {
 
             } else {
               await client.index({
-                index: "games_data_copy",
+                index: "games_data",
                 id: n,
                 refresh: true,
                 body: {
@@ -106,7 +106,7 @@ async function work(n, index, worker) {
           } else {
             if (result.metacritic) {
               await client.update({
-                index: "games_data_copy",
+                index: "games_data",
                 refresh: true,
                 id: exist._id, //이거 뭔뜻?
                 body: {
@@ -134,7 +134,7 @@ async function work(n, index, worker) {
 
             } else {
               await client.update({
-                index: "games_data_copy",
+                index: "games_data",
                 refresh: true,
                 id: exist._id, //이거 뭔뜻?
                 body: {
@@ -165,7 +165,7 @@ async function work(n, index, worker) {
           const { exist } = await check(n);
           if (exist) {
             await client.update({
-              index: "games_data_copy",
+              index: "games_data",
               refresh: true,
               id: exist,
               body: {
@@ -179,7 +179,7 @@ async function work(n, index, worker) {
             console.log(`${worker} PASS | [${n}]`);
           } else {
             await client.index({
-              index: "games_data_copy",
+              index: "games_data",
               refresh: true,
               id: n,
               body: {
@@ -259,7 +259,7 @@ let finAllList = async (offset, start) => {
 
 let check = async (appid) => {
   const list = await client.search({
-    index: "games_data_copy",
+    index: "games_data",
     body: {
       query: {
         bool: {

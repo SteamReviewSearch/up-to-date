@@ -19,7 +19,7 @@ module.exports = class GetKor {
   // 리뷰 중복체크
   check = async (recommendationid) => {
     const list = await client.search({
-      index: "reviews_datas",
+      index: "reviews_data",
       body: {
         query: {
           bool: {
@@ -30,7 +30,7 @@ module.exports = class GetKor {
     });
     if (list.hits.hits.length) {
       await client.delete({
-        index: "reviews_datas",
+        index: "reviews_data",
         id: list.hits.hits[0]._id,
       });
     }
@@ -77,7 +77,7 @@ module.exports = class GetKor {
                   if (!reuslt_check) {
                     // false === 중복이 없는 경우 생성
                     await client.index({
-                      index: "reviews_datas",
+                      index: "reviews_data",
                       refresh: true,
                       id: j.recommendationid,
                       body: {
@@ -100,7 +100,7 @@ module.exports = class GetKor {
                   } else {
                     // object === 중복 있는 경우 수정
                     // await client.update({
-                    //   index: "reviews_datas",
+                    //   index: "reviews_data",
                     //   refresh: true,
                     //   id: reuslt_check._id, // 와 지렸다 진짜 지렸어여
                     //   body: {
@@ -125,7 +125,7 @@ module.exports = class GetKor {
                 }
                 // 업데이트 유무 상관없이 크롤링한 평가 정보 games_data 에 업데이트
                 await client.update({
-                  index: "games_data_copy",
+                  index: "games_data",
                   refresh: true,
                   id: n,
                   body: {
@@ -161,7 +161,7 @@ module.exports = class GetKor {
   //     for (const i of list) {
   //       //두개씩있는 배열 반복
   //       index++;
-  //       console.log("reviews_datas kor" + num + '번 일꾼 / ', "index : " + index, " / appid: " + i);
+  //       console.log("reviews_data kor" + num + '번 일꾼 / ', "index : " + index, " / appid: " + i);
   //       await work(i, index);
   //       await setTimeoutPromise(1000);
   //     }
