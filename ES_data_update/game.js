@@ -247,7 +247,7 @@ test = async () => {
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 180000) // 30초에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 30000) // 30초에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -269,7 +269,7 @@ let finAllList = async (offset, start) => {
       }
 
 
-      console.log(offset + " worker - 스타또 30초 뒤" + offset + 1 + " worker 시작")
+      console.log(offset + "-worker - 스타또 30초 뒤 ", offset + 1, "-worker 시작")
       return list;
     } else {
       console.log(res.body.slice(0, 6) + i);
