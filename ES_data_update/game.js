@@ -259,8 +259,8 @@ let finAllList = async (offset, start) => {
       // console.log(apps);
       let list = [];
       for (
-        let i = (offset - 1) * 20000 + start;
-        i < (offset - 1) * 20000 + start + 20000;
+        let i = (offset - 1) * 27000 + start;
+        i < (offset - 1) * 27000 + start + 27000;
         i++ //최대치를 넘어가지 못하게 수정
       ) {
         if (apps[i]) {
@@ -269,7 +269,7 @@ let finAllList = async (offset, start) => {
       }
 
 
-      console.log(offset + "-worker - 스타또 30초 뒤 ", offset + 1, "-worker 시작")
+      console.log(offset + "-worker - 스타또 | ", offset < 6 ? `30초 뒤 ${offset + 1}-worker 시작` : "상태 양호")
       return list;
     } else {
       console.log(res.body.slice(0, 6) + i);
