@@ -200,7 +200,7 @@ async function work(n, index, worker) {
                 },
               },
             });
-            console.log("Worker " + worker + "of game - " + n + "번 패스");
+            console.log("Worker " + worker + " of game - " + n + "번 패스");
           } else {
             await client.index({
               index: "games_data_copy",
@@ -212,7 +212,7 @@ async function work(n, index, worker) {
                 pass: false,
               },
             });
-            console.log("Worker " + worker + "of game - " + n + "번 패스");
+            console.log("Worker " + worker + " of game - " + n + "번 패스");
           }
         }
       }
@@ -259,8 +259,8 @@ let finAllList = async (offset, start) => {
       // console.log(apps);
       let list = [];
       for (
-        let i = (offset - 1) * 50000 + start;
-        i < (offset - 1) * 50000 + start + 50000;
+        let i = (offset - 1) * 20000 + start;
+        i < (offset - 1) * 20000 + start + 20000;
         i++ //최대치를 넘어가지 못하게 수정
       ) {
         if (apps[i]) {
