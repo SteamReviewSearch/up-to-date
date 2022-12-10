@@ -235,7 +235,7 @@ ${num_art}| [${n}]`);
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 600) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -244,15 +244,22 @@ let finAllList = async (offset, start) => {
     const response = JSON.parse(res.getBody("utf8"));
     if (res.getBody("utf8").slice(0, 6) !== "<HTML>") {
       let apps = response.applist.apps;
-      // console.log(apps);
-      let list = [];
-      for (
-        let i = (offset - 1) * 40000 + start;
-        i < (offset - 1) * 40000 + start + 40000;
-        i++ //최대치를 넘어가지 못하게 수정
-      ) {
-        if (apps[i]) list.push(apps);
+
+      if (offset === 4) {
+        console.log('4번이다병')
+        return apps.slice(((offset - 1) + start) * 40000, -1)
+
       }
+      const list = apps.slice(((offset - 1) + start) * 40000, (offset - 1) * 40000 + start + 39999)
+
+      // let list = [];
+      // for (
+      //   let i = (offset - 1) * 40000 + start;
+      //   i < (offset - 1) * 40000 + start + 40000;
+      //   i++ //최대치를 넘어가지 못하게 수정
+      // ) {
+      //   if (apps[i]) list.push(apps[i]);
+      // }
 
 
       console.log(`
@@ -260,7 +267,6 @@ let finAllList = async (offset, start) => {
   ${offset}-Worker START!! | ${offset < 4 ? "1분 뒤 다음 worker 시작" : "Worker threads 시작 완료"}
 =============================================
       `)
-
       return list;
     } else {
       console.log(res.body.slice(0, 6) + i);
