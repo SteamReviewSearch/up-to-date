@@ -200,7 +200,7 @@ async function work(n, index, worker) {
                 },
               },
             });
-            console.log("Worker " + worker + " of game - " + n + "번 패스");
+            console.log(worker + " game - " + n + "번 패스");
           } else {
             await client.index({
               index: "games_data_copy",
@@ -212,7 +212,7 @@ async function work(n, index, worker) {
                 pass: false,
               },
             });
-            console.log("Worker " + worker + " of game - " + n + "번 패스");
+            console.log(worker + " game - " + n + "번 패스");
           }
         }
       }
@@ -231,23 +231,26 @@ test = async () => {
   let num = Worker.threadId;
   let start = 0;
   let list = await finAllList(num, start);
-  //game테이블에서 리스트 구합니다.
-  //배열을 2개씩 나눕니다.
+  let num_art = ""
+  for (let i = 1; i <= 6; i++) {
+    if (i === num) num_art += `${num} `
+    if (i < 6) num_art += "| "
+  }
   let index = 0;
   for (const i of list) {
     //두개씩있는 배열 반복
     let n = i;
     index++;
 
-    console.log(`Worker ${num} of game - ${index} 싸이클 시작`);
-    const result = await work(n, index, num);
+    console.log(`${num_art} ---> ${index} 싸이클 시작 [${i}] `);
+    const result = await work(n, index, num_art);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
   }
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 1000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -267,7 +270,11 @@ let finAllList = async (offset, start) => {
       }
 
 
-      console.log(offset + "-worker - 스타또 | ", offset < 6 ? `1분 뒤 ${offset + 1}-worker 시작` : "상태 양호")
+      console.log(`
+=============================================
+ ${offset}-Worker START!! | ${offset < 6 ? "1분 뒤 다음 worker 시작" : ""}
+=============================================
+      `)
 
       return list;
     } else {

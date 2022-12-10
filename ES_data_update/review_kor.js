@@ -40,7 +40,7 @@ module.exports = class GetKor {
 
   work = async (n, index, worker) => {
     //반복문을 동기처리 및 실패시 재접속을 위한 함수화
-    console.log(`Worker ${worker} of kor - ${index} 싸이클 / appid: ${n}`);
+    console.log(`${worker} ---> ${index} kor`);
     //n:appid
     await this.setTimeoutPromise(1000);
     await axios
