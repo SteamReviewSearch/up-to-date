@@ -58,25 +58,19 @@ async function work(n, index, worker) {
                 refresh: true,
                 body: {
                   params: { retry_on_conflict: 6 },
-                  genre: result.genre,
-                  review_score: result.review_score,
                   name: result.name,
-                  genreid: result.genreid,
-                  total_positive: result.total_positive,
                   img_url: result.img_url,
-                  review_score_desc: result.review_score_desc,
-                  total_positive: result.total_positive,
                   appid: n,
                   short_description: result.short_description,
                   supported_language: result.supported_language,
                   categories: result.categories,
                   type: result.type,
-                  short_description_eng: result.short_description_eng,
                   genres: result.genres,
                   release_date: result.release_date,
                   platforms: result.platforms,
-                  metacritic: result.metacritic,
                   price_overview: result.price_overview,
+                  metacritic: result.metacritic,
+                  recommendations: result.recommendations,
                   pass: true,
                 },
               });
@@ -90,24 +84,18 @@ async function work(n, index, worker) {
                 refresh: true,
                 body: {
                   params: { retry_on_conflict: 6 },
-                  genre: result.genre,
-                  review_score: result.review_score,
                   name: result.name,
-                  genreid: result.genreid,
-                  total_positive: result.total_positive,
                   img_url: result.img_url,
-                  review_score_desc: result.review_score_desc,
-                  total_positive: result.total_positive,
                   appid: n,
                   short_description: result.short_description,
                   supported_language: result.supported_language,
                   categories: result.categories,
                   type: result.type,
-                  short_description_eng: result.short_description_eng,
                   genres: result.genres,
                   release_date: result.release_date,
                   platforms: result.platforms,
                   price_overview: result.price_overview,
+                  recommendations: result.recommendations,
                   pass: true,
                 },
               });
@@ -124,25 +112,19 @@ async function work(n, index, worker) {
                 body: {
                   doc: {
                     params: { retry_on_conflict: 6 },
-                    review_score: result.review_score,
                     name: result.name,
-                    version: result.version,
-                    total_positive: result.total_positive,
                     img_url: result.img_url,
-                    review_score_desc: result.review_score_desc,
-                    total_positive: result.total_positive,
-                    appid: result.appid,
-                    timestamp: result.timestamp,
+                    appid: n,
                     short_description: result.short_description,
                     supported_language: result.supported_language,
                     categories: result.categories,
                     type: result.type,
-                    short_description_eng: result.short_description_eng,
                     genres: result.genres,
                     release_date: result.release_date,
                     platforms: result.platforms,
-                    metacritic: result.metacritic,
                     price_overview: result.price_overview,
+                    metacritic: result.metacritic,
+                    recommendations: result.recommendations,
                     pass: true,
                   },
                 },
@@ -158,24 +140,18 @@ async function work(n, index, worker) {
                 body: {
                   doc: {
                     params: { retry_on_conflict: 6 },
-                    review_score: result.review_score,
                     name: result.name,
-                    version: result.version,
-                    total_positive: result.total_positive,
                     img_url: result.img_url,
-                    review_score_desc: result.review_score_desc,
-                    total_positive: result.total_positive,
-                    appid: result.appid,
-                    timestamp: result.timestamp,
+                    appid: n,
                     short_description: result.short_description,
                     supported_language: result.supported_language,
                     categories: result.categories,
                     type: result.type,
-                    short_description_eng: result.short_description_eng,
                     genres: result.genres,
                     release_date: result.release_date,
                     platforms: result.platforms,
                     price_overview: result.price_overview,
+                    recommendations: result.recommendations,
                     pass: true,
                   },
                 },
@@ -200,7 +176,7 @@ async function work(n, index, worker) {
                 },
               },
             });
-            console.log(worker + " game - " + n + "번 패스");
+            console.log(`${worker} PASS | [${n}]`);
           } else {
             await client.index({
               index: "games_data_copy",
@@ -212,7 +188,7 @@ async function work(n, index, worker) {
                 pass: false,
               },
             });
-            console.log(worker + " game - " + n + "번 패스");
+            console.log(`${worker} PASS | [${n}]`);
           }
         }
       }
@@ -232,17 +208,15 @@ test = async () => {
   let start = 0;
   let list = await finAllList(num, start);
   let num_art = ""
-  for (let i = 1; i <= 6; i++) {
-    if (i === num) num_art += `${num} `
-    if (i < 6) num_art += "| "
+  for (let i = 0; i < (num - 1) * 25; i++) {
+    num_art += " "
   }
   let index = 0;
   for (const i of list) {
     //두개씩있는 배열 반복
     let n = i;
     index++;
-
-    console.log(`${num_art} ---> ${index} 싸이클 시작 [${i}] `);
+    console.log(`${num_art}${index} | game | [${i}]`);
     const result = await work(n, index, num_art);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
@@ -250,7 +224,7 @@ test = async () => {
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
+  // await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"

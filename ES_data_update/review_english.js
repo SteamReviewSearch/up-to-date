@@ -40,7 +40,7 @@ module.exports = class GetEng {
   // n = appid , index = 없어도 됨. 
   work = async (n, index, worker) => {
     //반복문을 동기처리 및 실패시 재접속을 위한 함수화
-    console.log(`${worker} ---> ${index} eng`);
+    console.log(`${worker}${index} | eng  | [${n}]`);
 
     //n:appid
     await this.setTimeoutPromise(1000);
@@ -90,11 +90,13 @@ module.exports = class GetEng {
                         playtime_at_review: j.author.playtime_at_review,
                         language: j.language,
                         review: j.review,
-                        timestamp_updated: j.timestamp_created,
+                        timestamp_updated: j.timestamp_updated,
                         voted_up: j.voted_up,
                         votes_up: j.votes_up,
                         votes_funny: j.votes_funny,
                         weighted_vote_score: j.weighted_vote_score,
+                        playtime_forever: j.playtime_forever,
+                        playtime_last_two_weeks: j.playtime_last_two_weeks,
                       },
                     });
                   } else {
