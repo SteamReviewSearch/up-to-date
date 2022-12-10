@@ -250,7 +250,7 @@ test = async () => {
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 1000) // 1분에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -272,7 +272,7 @@ let finAllList = async (offset, start) => {
 
       console.log(`
 =============================================
- ${offset}-Worker START!! | ${offset < 6 ? "1분 뒤 다음 worker 시작" : ""}
+  ${offset}-Worker START!! | ${offset < 6 ? "1분 뒤 다음 worker 시작" : "Worker threads 시작 완료"}
 =============================================
       `)
 
