@@ -19,7 +19,7 @@ function setTimeoutPromise(ms) {
   });
 }
 
-async function work(n, index, worker) {
+async function work(n, name, index, worker) {
   //반복문을 동기처리 및 실패시 재접속을 위한 함수화
   //n:appid
   await setTimeoutPromise(15000);
@@ -59,6 +59,7 @@ async function work(n, index, worker) {
                 body: {
                   params: { retry_on_conflict: 6 },
                   name: result.name,
+                  name_eng: name,
                   img_url: result.img_url,
                   appid: n,
                   short_description: result.short_description,
@@ -85,6 +86,7 @@ async function work(n, index, worker) {
                 body: {
                   params: { retry_on_conflict: 6 },
                   name: result.name,
+                  name_eng: name,
                   img_url: result.img_url,
                   appid: n,
                   short_description: result.short_description,
@@ -113,6 +115,7 @@ async function work(n, index, worker) {
                   doc: {
                     params: { retry_on_conflict: 6 },
                     name: result.name,
+                    name_eng: name,
                     img_url: result.img_url,
                     appid: n,
                     short_description: result.short_description,
@@ -141,6 +144,7 @@ async function work(n, index, worker) {
                   doc: {
                     params: { retry_on_conflict: 6 },
                     name: result.name,
+                    name_eng: name,
                     img_url: result.img_url,
                     appid: n,
                     short_description: result.short_description,
@@ -218,12 +222,13 @@ test = async () => {
   let index = 0;
   for (const i of list) {
     //두개씩있는 배열 반복
-    let n = i;
+    let n = i.appid;
+    let name = i.name;
     index++;
     console.log(`
 ${num_art}| ${index}-game 
-${num_art}| [${i}]`);
-    const result = await work(n, index, num_art);
+${num_art}| [${n}]`);
+    const result = await work(n, name, index, num_art);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
   }
@@ -242,17 +247,17 @@ let finAllList = async (offset, start) => {
       // console.log(apps);
       let list = [];
       for (
-        let i = (offset - 1) * 30000 + start;
-        i < (offset - 1) * 30000 + start + 30000;
+        let i = (offset - 1) * 40000 + start;
+        i < (offset - 1) * 40000 + start + 40000;
         i++ //최대치를 넘어가지 못하게 수정
       ) {
-        if (apps[i]) list.push(apps[i].appid);
+        if (apps[i]) list.push(apps);
       }
 
 
       console.log(`
 =============================================
-  ${offset}-Worker START!! | ${offset < 6 ? "1분 뒤 다음 worker 시작" : "Worker threads 시작 완료"}
+  ${offset}-Worker START!! | ${offset < 4 ? "1분 뒤 다음 worker 시작" : "Worker threads 시작 완료"}
 =============================================
       `)
 
