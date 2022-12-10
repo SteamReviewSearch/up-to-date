@@ -176,7 +176,9 @@ async function work(n, index, worker) {
                 },
               },
             });
-            console.log(`${worker} PASS | [${n}]`);
+            console.log(`
+${worker}| PASS 
+${worker}| [${n}]`);
           } else {
             await client.index({
               index: "games_data",
@@ -188,7 +190,9 @@ async function work(n, index, worker) {
                 pass: false,
               },
             });
-            console.log(`${worker} PASS | [${n}]`);
+            console.log(`
+${worker}| PASS 
+${worker}| [${n}]`);
           }
         }
       }
@@ -208,7 +212,7 @@ test = async () => {
   let start = 0;
   let list = await finAllList(num, start);
   let num_art = ""
-  for (let i = 0; i < (num - 1) * 25; i++) {
+  for (let i = 0; i < (num - 1) * 13; i++) {
     num_art += " "
   }
   let index = 0;
@@ -216,7 +220,9 @@ test = async () => {
     //두개씩있는 배열 반복
     let n = i;
     index++;
-    console.log(`${num_art}${index} | game | [${i}]`);
+    console.log(`
+${num_art}| ${index}-game 
+${num_art}| [${i}]`);
     const result = await work(n, index, num_art);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
@@ -224,7 +230,7 @@ test = async () => {
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
+  // await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
