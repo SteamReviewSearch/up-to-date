@@ -230,7 +230,6 @@ async function work(n, index, worker) {
 test = async () => {
   let num = Worker.threadId;
   let start = 0;
-  console.log(num + " worker - 스타또")
   let list = await finAllList(num, start);
   //game테이블에서 리스트 구합니다.
   //배열을 2개씩 나눕니다.
@@ -248,6 +247,7 @@ test = async () => {
 };
 let finAllList = async (offset, start) => {
   //게임 리스트
+  await setTimeoutPromise((offset - 1) * 6000) // 1분에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -267,6 +267,9 @@ let finAllList = async (offset, start) => {
           list.push(apps[i].appid);
         }
       }
+
+
+      console.log(offset + " worker - 스타또")
       return list;
     } else {
       console.log(res.body.slice(0, 6) + i);

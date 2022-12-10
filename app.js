@@ -23,16 +23,10 @@
 //   await require("./ES_data_update/index_english.js");
 //   await require("./ES_data_update/index_kor.js");
 // });
-function setTimeoutPromise(ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), ms);
-  });
-}
+
 let ha = async () => {
   require("./ES_data_update/index_game.js");
-  // await setTimeoutPromise(1000)
   // require("./ES_data_update/index_english.js");
-  // await setTimeoutPromise(1000)
   // require("./ES_data_update/index_kor.js");
 };
 ha();
