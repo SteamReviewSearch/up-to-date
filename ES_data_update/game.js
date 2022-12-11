@@ -215,8 +215,9 @@ test = async () => {
   let num = Worker.threadId;
   // 나 === 0 | 민재님 === 3334 | 성영님 === 6667 설정 후 node start.
   // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
-  let start = 0;
+  let start = 3334;
   let { list, start_point } = await finAllList(num, start);
+  if (!list) return;
   let num_art = ""
   for (let i = 0; i < (num - 1) * 13; i++) {
     num_art += " "
@@ -249,22 +250,30 @@ let finAllList = async (offset, start) => {
     if (res.getBody("utf8").slice(0, 6) !== "<HTML>") {
       let apps = response.applist.apps;
       let start_point = ((offset - 1) * 10000) + start
-      if (offset === 15) {
-        console.log('마지막 스레드')
-        // return apps.slice(start_point, -1) // 기존 코드
-        if (start_point + 3333 > apps.length) {
-          return apps.slice(start_point, -1)
+      const log = `
+      ===================================================================
+        ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 16 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
+      ===================================================================
+            `
+
+      // 마지막 스레드 분기처리
+      if (offset === 16) {
+        if (start_point < apps.length) {
+          if (start_point + 3333 > apps.length) {
+            console.log(log)
+            return { list: apps.slice(start_point, -1), start_point };
+          } else {
+            console.log(log)
+            return { list: apps.slice(start_point, start_point + 3333), start_point };
+          }
         }
-        return apps.slice(start_point, start_point + 3333)
+        console.log(`${offset} - 이번 스레드가 필요가 없음 Worker threads 시작 완료`)
+        return { list: false, start_point };
       }
       // const list = apps.slice(start_point, (offset - 1) * 10000 + 9999 + start) //스레드 15개로 혼자 돌린다 쳤을 때
       const list = apps.slice(start_point, start_point + 3333)
 
-      console.log(`
-===================================================================
-  ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 15 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
-===================================================================
-      `)
+      console.log(log)
       return { list, start_point };
     } else {
       console.log(res.body.slice(0, 6) + i);

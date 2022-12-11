@@ -21,7 +21,7 @@ async function index_game() {
   myWorker13 = new Worker(__dirname + "/game.js");
   myWorker14 = new Worker(__dirname + "/game.js");
   myWorker15 = new Worker(__dirname + "/game.js");
-  // myWorker16 = new Worker(__dirname + "/game.js");
+  myWorker16 = new Worker(__dirname + "/game.js");
   // myWorker17 = new Worker(__dirname + "/game.js");
   // myWorker18 = new Worker(__dirname + "/game.js");
   // myWorker19 = new Worker(__dirname + "/game.js");
