@@ -215,7 +215,7 @@ test = async () => {
   let num = Worker.threadId;
   // 나 === 0 | 민재님 === 3334 | 성영님 === 6667 설정 후 node start.
   // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
-  let start = 3334;
+  let start = 0;
   let { list, start_point } = await finAllList(num, start);
   if (!list) return;
   let num_art = ""
@@ -252,12 +252,12 @@ let finAllList = async (offset, start) => {
       let start_point = ((offset - 1) * 10000) + start
       const log = `
       ===================================================================
-        ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 16 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
+        ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 10 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
       ===================================================================
             `
 
       // 마지막 스레드 분기처리
-      if (offset === 16) {
+      if (offset === 10) {
         if (start_point < apps.length) {
           if (start_point + 3333 > apps.length) {
             console.log(log)
