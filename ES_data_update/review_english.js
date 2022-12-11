@@ -92,6 +92,7 @@ ${worker}| [${n}]`);
                         playtime_at_review: j.author.playtime_at_review,
                         language: j.language,
                         review: j.review,
+                        date_updated: new Date(j.timestamp_updated),
                         timestamp_updated: j.timestamp_updated,
                         voted_up: j.voted_up,
                         votes_up: j.votes_up,
