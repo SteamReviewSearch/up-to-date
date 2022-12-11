@@ -213,29 +213,33 @@ ${worker}| [${n}]`);
 
 test = async () => {
   let num = Worker.threadId;
+  // 나 === 0 | 민재님 === 3334 | 성영님 === 6667 설정 후 node start.
+  // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
   let start = 0;
-  let list = await finAllList(num, start);
+  let { list, start_point } = await finAllList(num, start);
   let num_art = ""
   for (let i = 0; i < (num - 1) * 13; i++) {
     num_art += " "
   }
-  let index = 0;
+  let index = start_point;
   for (const i of list) {
     //두개씩있는 배열 반복
     let n = i.appid;
     let name = i.name;
-    index++;
     console.log(`
 ${num_art}| ${index}-game 
 ${num_art}| [${n}]`);
+    index++;
     const result = await work(n, name, index, num_art);
     // console.log(result)
     if (result) await setTimeoutPromise(1000);
   }
 };
+
+
 let finAllList = async (offset, start) => {
   //게임 리스트
-  await setTimeoutPromise((offset - 1) * 60000) // 1분에 하나씩 시작
+  await setTimeoutPromise((offset - 1) * 30000) // 30초에 하나씩 시작
   let res = await request(
     "Get",
     "https://api.steampowered.com/ISteamApps/GetAppList/v2"
@@ -244,30 +248,24 @@ let finAllList = async (offset, start) => {
     const response = JSON.parse(res.getBody("utf8"));
     if (res.getBody("utf8").slice(0, 6) !== "<HTML>") {
       let apps = response.applist.apps;
-
-      if (offset === 4) {
-        console.log('4번이다병')
-        return apps.slice(((offset - 1) + start) * 40000, -1)
-
+      let start_point = ((offset - 1) * 10000) + start
+      if (offset === 15) {
+        console.log('마지막 스레드')
+        // return apps.slice(start_point, -1) // 기존 코드
+        if (start_point + 3333 > apps.length) {
+          return apps.slice(start_point, -1)
+        }
+        return apps.slice(start_point, start_point + 3333)
       }
-      const list = apps.slice(((offset - 1) + start) * 40000, (offset - 1) * 40000 + start + 39999)
-
-      // let list = [];
-      // for (
-      //   let i = (offset - 1) * 40000 + start;
-      //   i < (offset - 1) * 40000 + start + 40000;
-      //   i++ //최대치를 넘어가지 못하게 수정
-      // ) {
-      //   if (apps[i]) list.push(apps[i]);
-      // }
-
+      // const list = apps.slice(start_point, (offset - 1) * 10000 + 9999 + start) //스레드 15개로 혼자 돌린다 쳤을 때
+      const list = apps.slice(start_point, start_point + 3333)
 
       console.log(`
-=============================================
-  ${offset}-Worker START!! | ${offset < 4 ? "1분 뒤 다음 worker 시작" : "Worker threads 시작 완료"}
-=============================================
+===================================================================
+  ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 15 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
+===================================================================
       `)
-      return list;
+      return { list, start_point };
     } else {
       console.log(res.body.slice(0, 6) + i);
     }
