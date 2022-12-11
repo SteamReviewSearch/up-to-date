@@ -213,7 +213,7 @@ ${worker}| [${n}]`);
 
 test = async () => {
   let num = Worker.threadId;
-  // 나 === 0 | 민재님 === 3334 | 성영님 === 6667 설정 후 node start.
+  // 나 === 0 | 민재님 === 5333 | 성영님 === 10666 설정 후 node start.
   // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
   let start = 0;
   let { list, start_point } = await finAllList(num, start);
@@ -249,7 +249,7 @@ let finAllList = async (offset, start) => {
     const response = JSON.parse(res.getBody("utf8"));
     if (res.getBody("utf8").slice(0, 6) !== "<HTML>") {
       let apps = response.applist.apps;
-      let start_point = ((offset - 1) * 10000) + start
+      let start_point = ((offset - 1) * 16000) + start
       const log = `
       ===================================================================
         ${offset}-Worker START!! | 시작: ${start_point} | ${offset < 10 ? "30초 뒤 다음 worker 시작" : "Worker threads 시작 완료"} 
@@ -259,12 +259,12 @@ let finAllList = async (offset, start) => {
       // 마지막 스레드 분기처리
       if (offset === 10) {
         if (start_point < apps.length) {
-          if (start_point + 3333 > apps.length) {
+          if (start_point + 5333 > apps.length) {
             console.log(log)
             return { list: apps.slice(start_point, -1), start_point };
           } else {
             console.log(log)
-            return { list: apps.slice(start_point, start_point + 3333), start_point };
+            return { list: apps.slice(start_point, start_point + 5333), start_point };
           }
         }
         console.log(`${offset} - 이번 스레드가 필요가 없음 Worker threads 시작 완료`)
