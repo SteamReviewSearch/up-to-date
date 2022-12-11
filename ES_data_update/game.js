@@ -271,7 +271,7 @@ let finAllList = async (offset, start) => {
         return { list: false, start_point };
       }
       // const list = apps.slice(start_point, (offset - 1) * 10000 + 9999 + start) //스레드 15개로 혼자 돌린다 쳤을 때
-      const list = apps.slice(start_point, start_point + 3333)
+      const list = apps.slice(start_point, start_point + 5333)
 
       console.log(log)
       return { list, start_point };
