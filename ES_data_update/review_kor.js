@@ -92,12 +92,13 @@ ${worker}| [${n}]`);
                         review: j.review,
                         date_updated: new Date(j.timestamp_updated),
                         timestamp_updated: j.timestamp_updated,
+                        timestamp_updated: j.timestamp_updated,
+                        playtime_forever: j.author.playtime_forever,
+                        playtime_last_two_weeks: j.author.playtime_last_two_weeks,
                         voted_up: j.voted_up,
                         votes_up: j.votes_up,
                         votes_funny: j.votes_funny,
                         weighted_vote_score: j.weighted_vote_score,
-                        playtime_forever: j.playtime_forever,
-                        playtime_last_two_weeks: j.playtime_last_two_weeks,
                       },
                     });
                   } else {

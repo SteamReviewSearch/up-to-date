@@ -215,7 +215,7 @@ test = async () => {
   let num = Worker.threadId;
   // 나 === 0 | 민재님 === 6666 | 성영님 === 13332, 19998, 26,664 33330 설정 후 node start.
   // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
-  let start = 0;
+  let start = 24000;
   let { list, start_point } = await finAllList(num, start);
   if (!list) return;
   let num_art = ""
