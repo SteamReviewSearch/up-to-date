@@ -17,11 +17,11 @@ let gogo = async () => {
     console.log(num, "번 끝!!!")
     return;
   }
+  // 신규게임 리스트 체킹 -> 체크된 게임정보 저장
+  if (num === 1) await newGame.createNewGame()
 
   // release_date.comming_soon: true 인 게임 체크 -> 업데이트 정보 저장 
   await updateAll(list, start_point)
-  // 신규게임 리스트 체킹 -> 체크된 게임정보 저장
-  await newGame.createNewGame()
 };
 
 
