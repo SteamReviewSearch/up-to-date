@@ -1,6 +1,9 @@
 const client = require("../ELK_connection")
 var request = require("sync-request");
 const Detail = require('./game')
+const Worker = require("worker_threads");
+
+const detail = new Detail();
 
 
 
@@ -15,12 +18,12 @@ let updateAll = async (offset, start) => {
 
       let index = -1;
       let count = 0
-      for (let i = 0; i < Math.ceil(apps.length / 1000); i++) {
+      for (let i = 0; i < Math.ceil(apps.length / 100); i++) {
         // 100씩 끊기
 
         await setTimeoutPromise(500)
         index++
-        let list = i === (Math.ceil(apps.length / 1000) - 1) ? apps.slice(i * 1000, -1) : apps.slice(i * 1000, i * 1000 + 1000);
+        let list = i === (Math.ceil(apps.length / 100) - 1) ? apps.slice(i * 100, -1) : apps.slice(i * 100, i * 100 + 100);
 
         // appid만 담기(_search용)
         let appid_list = [];
@@ -31,7 +34,7 @@ let updateAll = async (offset, start) => {
         // appid 묶음 검색하기 (_id 찾는용도)
         const games = await client.search({
           index: "games_data",
-          size: 1000,
+          size: 100,
           _source: ["appid"],
           query: {
             bool: {
@@ -42,8 +45,8 @@ let updateAll = async (offset, start) => {
                   }
                 },
                 {
-                  exists: {
-                    field: "name"
+                  match: {
+                    "release_date.coming_soon": true
                   }
                 }
               ]
@@ -60,7 +63,8 @@ let updateAll = async (offset, start) => {
 
             if (list[j].appid == games.hits.hits[k]._source.appid) {
 
-              const body = await Detail.work(list[j].appid, list[j].name)
+              const body = await detail.work(list[j].appid, list[j].name)
+              await detail.setTimeoutPromise(6000)
               const update_request = { "update": { "_id": games.hits.hits[k]._id, "_index": "games_data" } }
               const update_doc = { "doc": body }
               req_list.push(update_request, update_doc)
@@ -69,7 +73,7 @@ let updateAll = async (offset, start) => {
         }
         // bulk 요청하기
 
-        // console.log(req_list)
+        console.log(req_list)
         const result = await client.bulk({
           body: req_list
         })

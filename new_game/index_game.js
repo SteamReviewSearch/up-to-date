@@ -10,10 +10,10 @@ async function index_game() {
   myWorker2 = new Worker(__dirname + "/game.js");
   myWorker3 = new Worker(__dirname + "/game.js");
   myWorker4 = new Worker(__dirname + "/game.js");
-  // myWorker5 = new Worker(__dirname + "/game.js");
-  // myWorker6 = new Worker(__dirname + "/game.js");
-  // myWorker7 = new Worker(__dirname + "/game.js");
-  // myWorker8 = new Worker(__dirname + "/game.js");
+  myWorker5 = new Worker(__dirname + "/game.js");
+  myWorker6 = new Worker(__dirname + "/game.js");
+  myWorker7 = new Worker(__dirname + "/game.js");
+  myWorker8 = new Worker(__dirname + "/game.js");
   // myWorker9 = new Worker(__dirname + "/game.js");
   // myWorker10 = new Worker(__dirname + "/game.js");
   // myWorker11 = new Worker(__dirname + "/game.js");

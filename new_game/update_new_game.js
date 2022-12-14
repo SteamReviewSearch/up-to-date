@@ -2,7 +2,7 @@ const client = require("../ELK_connection")
 var request = require("sync-request");
 const Detail = require('./game')
 
-let detail = new Detail
+const detail = new Detail()
 
 function setTimeoutPromise(ms) {
   return new Promise((resolve, reject) => {
@@ -91,7 +91,7 @@ let updateNameEng = async () => {
           })
           console.log("index: " + index + " / " + "took: " + result.took + " / " + "errors: " + result.errors + ' / ' + 'count: ' + count)
         } else {
-          console.log(index + "이상무")
+          console.log(index + "없수")
         }
       }
     }
