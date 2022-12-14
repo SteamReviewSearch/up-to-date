@@ -108,11 +108,13 @@ ${worker}| [${n}]`);
                 let check_num=0;
                 let result_list=[];
                 for(let j of sort_reviews){
-                  while(j.recommendationid>sort_es_reviews[check_num]){
-                    check_num++;
-                  }
-                  if(j.recommendationid==sort_es_reviews[check_num]){
-                    continue;
+                  if(sort_es_reviews.length!==0){
+                    while(j.recommendationid>sort_es_reviews[check_num]){
+                      check_num++;
+                    }
+                    if(j.recommendationid==sort_es_reviews[check_num]){
+                      continue;
+                    }
                   }
                   let ele={
                     id: j.recommendationid,

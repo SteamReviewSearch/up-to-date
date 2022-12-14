@@ -103,19 +103,21 @@ ${worker}| [${n}]`);
                 let es_review_list=(await this.getESList({appid:n,size:size})).hits.hits;
                 let sort_es_reviews=[]
                 if(es_review_list.length!==0){
-                    sort_es_reviews=es_review_list.sort((a,b)=>{
-                    return a._source.recommendationid-b._source.recommendationid;
-                  })
-                }
-                let check_num=0;
-                let result_list=[];
-                for(let j of sort_reviews){
-                  while(j.recommendationid>sort_es_reviews[check_num]._source.recommendationid){
+                  sort_es_reviews=es_review_list.map(ele=>ele=ele._source.recommendationid).sort((a,b)=>{
+                  return a-b;
+                })
+              }
+              let check_num=0;
+              let result_list=[];
+              for(let j of sort_reviews){
+                if(sort_es_reviews.length!==0){
+                  while(j.recommendationid>sort_es_reviews[check_num]){
                     check_num++;
                   }
-                  if(j.recommendationid==sort_es_reviews[check_num]._source.recommendationid){
+                  if(j.recommendationid==sort_es_reviews[check_num]){
                     continue;
                   }
+                }
                   let ele={
                     id: j.recommendationid,
                     appid: n,
