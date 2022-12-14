@@ -6,14 +6,14 @@ async function index_game() {
   let myWorker1, myWorker2, myWorker3, myWorker4, myWorker5, myWorker6, myWorker7, myWorker8, myWorker9, myWorker10,
     myWorker11, myWorker12, myWorker13, myWorker14, myWorker15, myWorker16, myWorker17, myWorker18, myWorker19, myWorker20;
 
-  myWorker1 = new Worker(__dirname + "/game.js");
-  myWorker2 = new Worker(__dirname + "/game.js");
-  myWorker3 = new Worker(__dirname + "/game.js");
-  myWorker4 = new Worker(__dirname + "/game.js");
-  myWorker5 = new Worker(__dirname + "/game.js");
-  myWorker6 = new Worker(__dirname + "/game.js");
-  myWorker7 = new Worker(__dirname + "/game.js");
-  myWorker8 = new Worker(__dirname + "/game.js");
+  myWorker1 = new Worker(__dirname + "/all_game_update.js");
+  myWorker2 = new Worker(__dirname + "/all_game_update.js");
+  myWorker3 = new Worker(__dirname + "/all_game_update.js");
+  myWorker4 = new Worker(__dirname + "/all_game_update.js");
+  myWorker5 = new Worker(__dirname + "/all_game_update.js");
+  myWorker6 = new Worker(__dirname + "/all_game_update.js");
+  myWorker7 = new Worker(__dirname + "/all_game_update.js");
+  myWorker8 = new Worker(__dirname + "/all_game_update.js");
   // myWorker9 = new Worker(__dirname + "/game.js");
   // myWorker10 = new Worker(__dirname + "/game.js");
   // myWorker11 = new Worker(__dirname + "/game.js");
