@@ -1,6 +1,10 @@
-const client = require("./ELK_connection")
+const client = require("../ELK_connection")
 var request = require("sync-request");
-let updateNameEng = async (offset, start) => {
+const Detail = require('./game')
+
+
+
+let updateAll = async (offset, start) => {
   let res = await request(
     "Get", "https://api.steampowered.com/ISteamApps/GetAppList/v2"
   );
@@ -11,12 +15,12 @@ let updateNameEng = async (offset, start) => {
 
       let index = -1;
       let count = 0
-      for (let i = 0; i < apps.length / 100; i++) {
+      for (let i = 0; i < Math.ceil(apps.length / 1000); i++) {
         // 100씩 끊기
 
-        await setTimeoutPromise(1000)
+        await setTimeoutPromise(500)
         index++
-        let list = apps.slice(i, i + 100);
+        let list = i === (Math.ceil(apps.length / 1000) - 1) ? apps.slice(i * 1000, -1) : apps.slice(i * 1000, i * 1000 + 1000);
 
         // appid만 담기(_search용)
         let appid_list = [];
@@ -27,7 +31,7 @@ let updateNameEng = async (offset, start) => {
         // appid 묶음 검색하기 (_id 찾는용도)
         const games = await client.search({
           index: "games_data",
-          size: 100,
+          size: 1000,
           _source: ["appid"],
           query: {
             bool: {
@@ -55,8 +59,10 @@ let updateNameEng = async (offset, start) => {
           for (let j = 0; j < list.length; j++) {
 
             if (list[j].appid == games.hits.hits[k]._source.appid) {
+
+              const body = await Detail.work(list[j].appid, list[j].name)
               const update_request = { "update": { "_id": games.hits.hits[k]._id, "_index": "games_data" } }
-              const update_doc = { "doc": { "name_eng": list[j].name } }
+              const update_doc = { "doc": body }
               req_list.push(update_request, update_doc)
             }
           }
@@ -77,4 +83,4 @@ function setTimeoutPromise(ms) {
     setTimeout(() => resolve(), ms);
   });
 }
-updateNameEng()
+updateAll()
