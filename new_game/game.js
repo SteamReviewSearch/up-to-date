@@ -6,13 +6,6 @@ const axios = require("axios");
 //데이터베이스 접속 변수
 //작동코드
 
-const EngReview = require('../ES_data_update/review_english')
-const KorReview = require('../ES_data_update/review_kor')
-
-
-const eng = new EngReview()
-const kor = new KorReview()
-
 module.exports = class Detail {
 
   setTimeoutPromise = (ms) => {

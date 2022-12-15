@@ -3,12 +3,19 @@ var request = require("sync-request");
 const Detail = require('./game')
 const NewGame = require('./update_new_game')
 const Worker = require("worker_threads");
+const parentPort = require("worker_threads");
 const { updateErrorESLog } = require("../Log/logger");
+const EngReview = require('./review_english')
+const KorReview = require('./review_kor')
 
+
+
+const eng = new EngReview()
+const kor = new KorReview()
 const detail = new Detail();
 const newGame = new NewGame()
 let gogo = async () => {
-  let num = Worker.threadId;
+  let num =  Worker.threadId;
   // 나 === 0 | 민재님 === 6666 | 성영님 === 13332, 19998, 26,664 33330 설정 후 node start.
   // 스레드 15개, 스레드당 10000개씩 3명의 컴퓨터가 3분할하여 크롤링. 이론상 15시간이면 크롤링 완료 
   let start = 0;
@@ -22,6 +29,7 @@ let gogo = async () => {
 
   // release_date.comming_soon: true 인 게임 체크 -> 업데이트 정보 저장 
   await updateAll(list, start_point)
+  parentPort.close();
 };
 
 
@@ -84,6 +92,8 @@ let updateAll = async (apps, start_point) => {
     let appid_list = [];
 
     for (let j = 0; j < list.length; j++) {
+      await eng.work(list[j].appid,index)
+      await kor.work(list[j].appid,index)
       appid_list.push(list[j].appid)
     }
     // appid 묶음 검색하기 (_id 찾는용도)

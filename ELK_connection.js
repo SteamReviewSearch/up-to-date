@@ -7,8 +7,8 @@ const client = new Client({
     id: env.CLOUD_ID,
   },
   auth: {
-    username: env.JJ,
-    password: env.JJPW,
+    username: env.USER_NAME,
+    password: env.PASSWORD,
   },
 });
 
