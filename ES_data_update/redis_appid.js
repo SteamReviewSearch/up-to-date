@@ -28,7 +28,6 @@ async function b() {
           },
         },
       };
-      // console.log(review_option.body.sort)
       // 필터 넣어주기
       if (filterExists) {
         console.log("존재한다고?");
