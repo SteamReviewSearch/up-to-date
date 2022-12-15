@@ -15,12 +15,12 @@ module.exports = class GetEng {
       setTimeout(() => resolve(), ms);
     });
   }
-  count=async(n)=>{
+  count = async (n) => {
     let count = await client.count({
       index: "reviews_data",
       body: {
         query: {
-          bool:{
+          bool: {
             "filter": [
               {
                 "term": {
@@ -29,7 +29,7 @@ module.exports = class GetEng {
               },
               {
                 "term": {
-                  "language":"english"
+                  "language": "english"
                 }
               }
             ]
@@ -40,12 +40,12 @@ module.exports = class GetEng {
     return count.count;
   }
 
-  getESList= async ({appid,size})=>{
-    let appid_review_list=await client.search({
+  getESList = async ({ appid, size }) => {
+    let appid_review_list = await client.search({
       index: "reviews_data",
       body: {
         query: {
-          bool:{
+          bool: {
             "filter": [
               {
                 "term": {
@@ -54,7 +54,7 @@ module.exports = class GetEng {
               },
               {
                 "term": {
-                  "language":"english"
+                  "language": "english"
                 }
               }
             ]
@@ -94,29 +94,29 @@ ${worker}| [${n}]`);
               if (res.query_summary?.num_reviews === 0) {
                 return;
               } else {
-                let sort_reviews=await res.reviews.sort((a,b)=>{
-                  return a.recommendationid-b.recommendationid;
+                let sort_reviews = await res.reviews.sort((a, b) => {
+                  return a.recommendationid - b.recommendationid;
                 })
-                let size=await this.count(n)
-                let es_review_list=(await this.getESList({appid:n,size:size})).hits.hits;
-                let sort_es_reviews=[]
-                if(es_review_list.length!==0){
-                    sort_es_reviews=es_review_list.map(ele=>ele=ele._source.recommendationid).sort((a,b)=>{
-                    return a-b;
+                let size = await this.count(n)
+                let es_review_list = (await this.getESList({ appid: n, size: size })).hits.hits;
+                let sort_es_reviews = []
+                if (es_review_list.length !== 0) {
+                  sort_es_reviews = es_review_list.map(ele => ele = ele._source.recommendationid).sort((a, b) => {
+                    return a - b;
                   })
                 }
-                let check_num=0;
-                let result_list=[];
-                for(let j of sort_reviews){
-                  if(sort_es_reviews.length!==0){
-                    while(j.recommendationid>sort_es_reviews[check_num]){
+                let check_num = 0;
+                let result_list = [];
+                for (let j of sort_reviews) {
+                  if (sort_es_reviews.length !== 0) {
+                    while (j.recommendationid > sort_es_reviews[check_num]) {
                       check_num++;
                     }
-                    if(j.recommendationid==sort_es_reviews[check_num]){
+                    if (j.recommendationid == sort_es_reviews[check_num]) {
                       continue;
                     }
                   }
-                  let ele={
+                  let ele = {
                     id: j.recommendationid,
                     appid: n,
                     recommendationid: j.recommendationid,
@@ -133,11 +133,11 @@ ${worker}| [${n}]`);
                   }
                   result_list.push(ele)
                 }
-                if(result_list.length!==0){
-                  let operations= result_list.flatMap(doc => [{ index: { _index: 'reviews_data' } }, doc])
+                if (result_list.length !== 0) {
+                  let operations = result_list.flatMap(doc => [{ index: { _index: 'reviews_data' } }, doc])
                   const bulkResponse = await client.bulk({ refresh: true, operations })
-                }                
-                
+                }
+
                 await client.update({
                   index: "games_data",
                   refresh: true,
