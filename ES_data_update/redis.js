@@ -46,6 +46,5 @@ async function a() {
       throw error;
     }
   }
-  console.log(g);
 }
 a();
