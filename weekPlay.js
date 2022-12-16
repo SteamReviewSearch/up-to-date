@@ -1,4 +1,6 @@
 const mainThread = require("./new_game/index_game");
+const redisGameName = require("./redis_update/redis.js");
+const redisAppid = require("./redis_update/redis_appid.js");
 function setTimeoutPromise(ms) {
   return new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms);
@@ -25,8 +27,8 @@ const schedule = async () => {
     if (today >= plan) {
       plan = new Date(year, month, day + 7).toISOString();
       await new mainThread().index_game();
-      await require("./ES_data_update/redis.js");
-      await require("./ES_data_update/redis_appid.js");
+      await new redisGameName().redisA();
+      await new redisAppid().redisB();
     }
     console.log("now: ", today);
     await setTimeoutPromise(360000);
