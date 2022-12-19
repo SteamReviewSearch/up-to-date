@@ -97,13 +97,19 @@ module.exports = class GetEng {
                   return a.recommendationid - b.recommendationid;
                 })
                 let size = await this.count(n)
-
+                console.log(size)
                 let es_review_list = [];
-                for(let i=0;i<Number.toFixed(size/100);i++){
-                  es_review_list.push((await this.getESList({ appid: n, size: 100,slice_start:i*100 })).hits.hits)
-                }
-                es_review_list.push((await this.getESList({ appid: n, size: size%100,slice_start:Number.toFixed(size/100)*100 })).hits.hits)
+                for(let i=0;i<Math.floor(size/100);i++){
 
+                  let arr=(await this.getESList({ appid: n, size: 100,slice_start:i*100 })).hits.hits
+                  arr.map(ele=>{
+                    es_review_list.push(ele)
+                  })
+                }
+                let arr=(await this.getESList({ appid: n, size: size%100,slice_start:Math.floor(size/100)*100 })).hits.hits
+                arr.map(ele=>{
+                  es_review_list.push(ele)
+                })
                 let sort_es_reviews = []
                 if (es_review_list.length !== 0) {
                   sort_es_reviews = es_review_list.map(ele => ele = ele._source.recommendationid).sort((a, b) => {
